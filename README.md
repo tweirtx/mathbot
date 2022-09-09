@@ -31,6 +31,29 @@ It is *strongly* recommend that you setup an instance of Redis if you want to us
 
 Then navigate into the `mathbot` directory and run the bot with `python entrypoint.py parameters.json`.
 
+## Docker setup (alternative)
+This allows you to run Mathbot in a Docker container. Installing Docker is out of scope for this document.
+```bash
+git clone https://github.com/DXsmiley/mathbot.git
+cd mathbot
+cp mathbot/parameters_default.json mathbot/parameters.json
+```
+Once you have gotten this far, go ahead and fill out the parameters.json file as indicated before.
+After that, simply run the following commands to build the image and create the container:
+```bash
+docker build . -t mathbot:latest
+docker run -d --name mathbot --restart always
+```
+Note that you must rebuild the image each time you change parameters, however steps will be cached.
+
+The bot should start automatically with the restart always policy we gave it, but if it doesn't you should be able to run
+```bash
+docker start mathbot
+```
+to restart the existing container. If this doesn't work, try recreating the container. You can also view logs with 
+```bash
+docker logs mathbot
+```
 ## Setup for development
 
 ```bash
