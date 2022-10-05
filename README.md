@@ -42,7 +42,7 @@ Once you have gotten this far, go ahead and fill out the parameters.json file as
 After that, simply run the following commands to build the image and create the container:
 ```bash
 docker build . -t mathbot:latest
-docker run -d --name mathbot --restart always
+docker run -d --name mathbot --restart always mathbot:latest
 ```
 Note that you must rebuild the image each time you change parameters, however steps will be cached.
 
