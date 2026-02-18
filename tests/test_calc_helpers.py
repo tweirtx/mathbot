@@ -1,9 +1,9 @@
-import calculator
+from mathbot import calculator
 import pytest
 import math
 import cmath
 import sympy
-import collections
+import collections.abc
 
 from random import randint
 
@@ -74,7 +74,7 @@ def flatten(x):
     Flattens an irregularly nested list of lists.
     https://stackoverflow.com/a/2158522
     '''
-    if isinstance(x, collections.Iterable):
+    if isinstance(x, collections.abc.Iterable):
         return [a for i in x for a in flatten(i)]
     else:
         return [x]

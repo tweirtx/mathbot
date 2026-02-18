@@ -1,16 +1,13 @@
 # Calculator module
 
 import asyncio
-import utils
-import safe
-import core.help
-import core.util
-import core.settings
-import calculator
-import calculator.blackbox
+from mathbot import utils
+from mathbot import safe
+from mathbot import core
+from mathbot.calculator import blackbox
 import collections
 import traceback
-import patrons
+from mathbot import patrons
 import aiohttp
 import async_timeout
 import json
@@ -19,18 +16,22 @@ import traceback
 import typing
 import discord
 import abc
+import typing
 
 from discord.ext.commands import command, guild_only, has_permissions, Cog, Context
 from discord.ext.commands.hybrid import hybrid_command
 
+if typing.TYPE_CHECKING:
+	from bot import MathBot
 
-core.help.load_from_file('./help/calculator_brief.md')
-core.help.load_from_file('./help/calculator_full.md')
-core.help.load_from_file('./help/calculator_history.md')
-core.help.load_from_file('./help/calculator_libraries.md')
-core.help.load_from_file('./help/turing.md')
-core.help.load_from_file('./help/turing_functions.md')
-# core.help.load_from_file('./help/turing.md')
+
+core.help.load_from_file('./mathbot/help/calculator_brief.md')
+core.help.load_from_file('./mathbot/help/calculator_full.md')
+core.help.load_from_file('./mathbot/help/calculator_history.md')
+core.help.load_from_file('./mathbot/help/calculator_libraries.md')
+core.help.load_from_file('./mathbot/help/turing.md')
+core.help.load_from_file('./mathbot/help/turing_functions.md')
+# core.help.load_from_file('./mathbot/help/turing.md')
 
 
 SHORTCUT_HELP_CLARIFICATION = '''\
@@ -53,7 +54,7 @@ SCOPES = dict()
 
 async def get_scope(place):
 	if place not in SCOPES:
-		SCOPES[place] = await calculator.blackbox.Terminal.new_blackbox(
+		SCOPES[place] = await blackbox.Terminal.new_blackbox(
 			retain_cache=False,
 			output_limit=1950,
 			yield_rate=1,
@@ -92,7 +93,7 @@ class CalculatorModule(Cog):
 
 	__slots__ = ['bot', 'command_history', 'replay_state']
 
-	def __init__(self, bot):
+	def __init__(self, bot: 'MathBot'):
 		self.bot = bot
 		self.command_history = collections.defaultdict(lambda : '')
 		self.replay_state = collections.defaultdict(ReplayState)
@@ -276,7 +277,7 @@ class CalculatorModule(Cog):
 						result = 'Result was too large to display.'
 					await send(result)
 				if worked:
-					await self.bot.advertise_to(message.author, message.channel, message.channel)
+					# await self.bot.advertise_to(message.author, message.channel, message.channel)
 					if expression_has_side_effect(arg):
 						await self.add_command_to_history(message.channel, arg)
 				safe.sprint('Finished calculation:', arg)
@@ -390,7 +391,7 @@ class CalculatorModule(Cog):
 			await self.bot.keystore.set('calculator', 'history', str(channel.id), to_store, expire = EXPIRE_TIME)
 
 	async def allow_calc_history(self, channel):
-		if self.bot.parameters.get('release') == 'development':
+		if self.bot.parameters.release == 'development':
 			return True
 		return ENABLE_HISTORY
 		# if not ENABLE_HISTORY:
